@@ -12,8 +12,6 @@ import http from 'http';
 import https from 'https';
 import zlib from 'zlib';
 import Stream from 'stream';
-import http from 'node:http';
-import https from 'node:https';
 
 import Body, { writeToStream, getTotalBytes } from './body.js';
 import Response from './response.js';
