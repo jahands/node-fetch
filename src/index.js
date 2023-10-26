@@ -217,11 +217,26 @@ export default function fetch(url, opts) {
 
 						// HTTP-redirect fetch step 6 (counter increment)
 						// Create a new Request object.
+						const httpAgent = new http.Agent({
+							keepAlive: true
+						});
+						const httpsAgent = new https.Agent({
+							keepAlive: true
+						});
+						
+					
+						let agent = function(_parsedURL) {
+							if (_parsedURL.protocol == 'http:') {
+								return httpAgent;
+							} else {
+								return httpsAgent;
+							}
+						}
 						const requestOpts = {
 							headers: new Headers(request.headers),
 							follow: request.follow,
 							counter: request.counter + 1,
-							agent: request.agent,
+							agent,
 							compress: request.compress,
 							method: request.method,
 							body: request.body,

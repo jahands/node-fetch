@@ -140,6 +140,21 @@ export default class Request {
 		};
 
 		// node-fetch-only options
+		const httpAgent = new http.Agent({
+			keepAlive: true
+		});
+		const httpsAgent = new https.Agent({
+			keepAlive: true
+		});
+		
+	
+		let agent = function(_parsedURL) {
+			if (_parsedURL.protocol == 'http:') {
+				return httpAgent;
+			} else {
+				return httpsAgent;
+			}
+		}
 		this.follow = init.follow !== undefined ?
 			init.follow : input.follow !== undefined ?
 			input.follow : 20;
@@ -147,7 +162,7 @@ export default class Request {
 			init.compress : input.compress !== undefined ?
 			input.compress : true;
 		this.counter = init.counter || input.counter || 0;
-		this.agent = init.agent || input.agent;
+		this.agent = agent;
 	}
 
 	get method() {
