@@ -12,6 +12,8 @@ import Stream from 'stream';
 import whatwgUrl from 'whatwg-url';
 import Headers, { exportNodeCompatibleHeaders } from './headers.js';
 import Body, { clone, extractContentType, getTotalBytes } from './body';
+import http from 'node:http';
+import https from 'node:https';
 
 const INTERNALS = Symbol('Request internals');
 const URL = Url.URL || whatwgUrl.URL;
@@ -253,7 +255,21 @@ export function getNodeRequestOptions(request) {
 		headers.set('Accept-Encoding', 'gzip,deflate');
 	}
 
-	let agent = request.agent;
+	const httpAgent = new http.Agent({
+		keepAlive: true
+	});
+	const httpsAgent = new https.Agent({
+		keepAlive: true
+	});
+	
+
+	let agent = function(_parsedURL) {
+		if (_parsedURL.protocol == 'http:') {
+			return httpAgent;
+		} else {
+			return httpsAgent;
+		}
+	}
 	if (typeof agent === 'function') {
 		agent = agent(parsedURL);
 	}
